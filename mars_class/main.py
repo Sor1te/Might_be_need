@@ -79,7 +79,7 @@ def logout():
     logout_user()
     return redirect("/")
 
-@app.route('/news', methods=['GET', 'POST'])
+@app.route('/jobs', methods=['GET', 'POST'])
 @login_required
 def add_news():
     form = JobsForm()
@@ -87,6 +87,7 @@ def add_news():
         db_sess = db_session.create_session()
         jobs = Jobs()
         jobs.team_leader = form.team_leader.data
+        jobs.job = form.job.data
         jobs.work_size = form.work_size.data
         jobs.collaborators = form.collaborators.data
         jobs.is_private = form.is_finished.data
@@ -94,53 +95,57 @@ def add_news():
         db_sess.merge(current_user)
         db_sess.commit()
         return redirect('/')
-    return render_template('news.html', title='Добавление новости',
+    return render_template('jobs.html', title='Добавление новости',
                            form=form)
 
 
-@app.route('/news/<int:id>', methods=['GET', 'POST'])
+@app.route('/jobs/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit_news(id):
     form = JobsForm()
     if request.method == "GET":
         db_sess = db_session.create_session()
-        news = db_sess.query(Jobs).filter(Jobs.id == id,
+        jobs = db_sess.query(Jobs).filter(Jobs.id == id,
                                           Jobs.user == current_user
                                           ).first()
-        if news:
-            form.title.data = news.title
-            form.content.data = news.content
-            form.is_private.data = news.is_private
+        if jobs:
+            jobs.team_leader = form.team_leader.data
+            jobs.job = form.job.data
+            jobs.work_size = form.work_size.data
+            jobs.collaborators = form.collaborators.data
+            jobs.is_private = form.is_finished.data
         else:
             abort(404)
     if form.validate_on_submit():
         db_sess = db_session.create_session()
-        news = db_sess.query(News).filter(News.id == id,
-                                          News.user == current_user
+        jobs = db_sess.query(Jobs).filter(Jobs.id == id,
+                                          Jobs.user == current_user
                                           ).first()
-        if news:
-            news.title = form.title.data
-            news.content = form.content.data
-            news.is_private = form.is_private.data
+        if jobs:
+            jobs.team_leader = form.team_leader.data
+            jobs.job = form.job.data
+            jobs.work_size = form.work_size.data
+            jobs.collaborators = form.collaborators.data
+            jobs.is_private = form.is_finished.data
             db_sess.commit()
             return redirect('/')
         else:
             abort(404)
-    return render_template('news.html',
+    return render_template('jobs.html',
                            title='Редактирование новости',
                            form=form
                            )
 
 
-@app.route('/news_delete/<int:id>', methods=['GET', 'POST'])
+@app.route('/jobs_delete/<int:id>', methods=['GET', 'POST'])
 @login_required
 def news_delete(id):
     db_sess = db_session.create_session()
-    news = db_sess.query(News).filter(News.id == id,
-                                      News.user == current_user
+    jobs = db_sess.query(Jobs).filter(Jobs.id == id,
+                                      Jobs.user == current_user
                                       ).first()
-    if news:
-        db_sess.delete(news)
+    if jobs:
+        db_sess.delete(jobs)
         db_sess.commit()
     else:
         abort(404)
@@ -154,3 +159,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+
+
