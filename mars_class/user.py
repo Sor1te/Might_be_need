@@ -1,23 +1,52 @@
 from flask import Flask
 from data.users import User
-from data.news import News
+from data.jobs import Jobs
 from data import db_session
 
-db_session.global_init("db/blogs.db")
+db_session.global_init("db/mars_workers.db")
 user = User()
+user.surname = "r"
 user.name = "r"
-user.about = "биография пользователя 1235324"
-user.email = "email234@email.ru"
+user.age = 67
+user.position = 'pos'
+user.speciality = 'gfs'
+user.address = 'fghghfshg'
+user.email = "email2fghfgh32134254@email.ru"
+user.hashed_password = "12345"
+user.set_password(user.hashed_password)
 db_sess = db_session.create_session()
 db_sess.add(user)
 db_sess.commit()
 
-user.name = "Пользователь 2"
-user.about = "биография пользователя 34"
-user.email = "ema2il@email.ru"
+db_session.global_init("db/blogs.db")
+user = User()
+user.surname = "r"
+user.name = "r"
+user.age = 67
+user.position = 'pos'
+user.speciality = 'gfs'
+user.address = 'fghghfshg'
+user.email = "email2321dfdfcv323regdfhdf4254@email.ru"
+user.hashed_password = "12345"
+user.set_password(user.hashed_password)
+db_sess = db_session.create_session()
 db_sess.add(user)
 db_sess.commit()
 
+db_session.global_init("db/blogs.db")
+user = User()
+user.surname = "r"
+user.name = "r"
+user.age = 67
+user.position = 'pos'
+user.speciality = 'gfs'
+user.address = 'fghghfshg'
+user.email = "em4wertedffgh254@email.ru"
+user.hashed_password = "12345"
+user.set_password(user.hashed_password)
+db_sess = db_session.create_session()
+db_sess.add(user)
+db_sess.commit()
 
 user = db_sess.query(User).first()
 print(user.name)

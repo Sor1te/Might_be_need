@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, abort, request
+from flask import Flask, render_template, redirect, abort, request, make_response, jsonify
 from data.users import User
 from forms.user import RegisterForm, LoginForm
 from data.jobs import Jobs
@@ -6,12 +6,19 @@ from data import db_session
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 
 from forms.jobs import JobsForm
+from data import jobs_api
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 
 login_manager = LoginManager()
 login_manager.init_app(app)
+
+
+def main():
+    db_session.global_init("db/mars_workers.db")
+    app.register_blueprint(jobs_api.blueprint)
+    app.run()
 
 
 @app.route("/")
@@ -21,6 +28,7 @@ def index():
         jobs = db_sess.query(Jobs).all()
     else:
         jobs = []
+    print(jobs)
     return render_template("index.html", jobs=jobs)
 
 
@@ -73,11 +81,13 @@ def login():
                                form=form)
     return render_template('login.html', title='Авторизация', form=form)
 
+
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect("/")
+
 
 @app.route('/jobs', methods=['GET', 'POST'])
 @login_required
@@ -151,15 +161,15 @@ def news_delete(id):
         abort(404)
     return redirect('/')
 
+@app.errorhandler(404)
+def not_found(error):
+    return make_response(jsonify({'error': 'Not found'}), 404)
 
-def main():
-    db_session.global_init("db/blogs.db")
-    app.run()
+
+@app.errorhandler(400)
+def bad_request(_):
+    return make_response(jsonify({'error': 'Bad Request'}), 400)
 
 
 if __name__ == '__main__':
     main()
-
-
-
-

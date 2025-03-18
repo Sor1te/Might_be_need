@@ -1,10 +1,17 @@
-from flask import Flask, render_template, redirect, request, abort
-from data.users import User
-from data import db_session
+from flask import Flask, render_template, redirect, request, abort, make_response, jsonify
+from data_for_news.users import User
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from forms.user import RegisterForm, LoginForm
-from data.news import News
+from data_for_news.news import News
 from forms.news import NewsForm
+from data_for_news import db_session, news_api
+
+
+def main():
+    db_session.global_init("db/blogs.db")
+    app.register_blueprint(news_api.blueprint)
+    app.run()
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
@@ -142,10 +149,14 @@ def news_delete(id):
         abort(404)
     return redirect('/')
 
+@app.errorhandler(404)
+def not_found(error):
+    return make_response(jsonify({'error': 'Not found'}), 404)
 
-def main():
-    db_session.global_init("db/blogs.db")
-    app.run()
+
+@app.errorhandler(400)
+def bad_request(_):
+    return make_response(jsonify({'error': 'Bad Request'}), 400)
 
 
 if __name__ == '__main__':
