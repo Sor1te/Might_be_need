@@ -5,15 +5,22 @@ from forms.user import RegisterForm, LoginForm
 from data_for_news.news import News
 from forms.news import NewsForm
 from data_for_news import db_session, news_api
+from flask_restful import abort, Api
+
+from mars_class.data import users_resources
 
 
 def main():
+    api.add_resource(news_resources.NewsListResource, '/api/v2/news')
+    # для одного объекта
+    api.add_resource(news_resources.NewsResource, '/api/v2/news/<int:news_id>')
     db_session.global_init("db/blogs.db")
     app.register_blueprint(news_api.blueprint)
     app.run()
 
 
 app = Flask(__name__)
+api = Api(app)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -148,6 +155,7 @@ def news_delete(id):
     else:
         abort(404)
     return redirect('/')
+
 
 @app.errorhandler(404)
 def not_found(error):

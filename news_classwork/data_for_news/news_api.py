@@ -1,7 +1,7 @@
 import flask
 from flask import jsonify, make_response, request
 
-from data_unnecessary import db_session
+from . import db_session
 from .news import News
 
 blueprint = flask.Blueprint(
